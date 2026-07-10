@@ -56,9 +56,9 @@ export default function About() {
                 <div className="text-xs font-bold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-sm inline-block">
                   Gemini 2.5 Pro
                 </div>
-                <div className="text-sm font-bold text-[#1B3022]">Pathology Diagnosis & PDF RAG</div>
+                <div className="text-sm font-bold text-[#1B3022]">Pathology Diagnosis</div>
                 <p className="text-xs text-[#5D6B5F] leading-normal font-sans">
-                  Deployed for high-accuracy crop leaf symptom identification and complex scientific reasoning across multi-page research bulletin text chunks under Document Intelligence.
+                  Deployed for high-accuracy crop leaf symptom identification and complex scientific reasoning.
                 </p>
               </div>
             </div>
@@ -74,7 +74,6 @@ export default function About() {
               {[
                 { label: "Data Persistence", value: "Browser IndexedDB (W3C Standard)", icon: Database, color: "text-blue-500" },
                 { label: "AI Engine", value: "Google Gemini (Secure Express Proxy)", icon: Cpu, color: "text-purple-500" },
-                { label: "PDF Extraction", value: "Client-Side pdfjs-dist Parsing", icon: FileText, color: "text-red-500" },
                 { label: "Crop Pathology Coverage", value: "Tomato, Potato, Rice, Cassava", icon: Sprout, color: "text-[#2E7D32]" }
               ].map((item, idx) => (
                 <div key={idx} className="flex gap-3 items-start text-xs border-b border-[#E8E5DF]/50 pb-3 last:border-0 last:pb-0">

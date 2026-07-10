@@ -10,15 +10,15 @@ import {
   Lightbulb
 } from "lucide-react";
 import { getAllRecords } from "../db";
-import { retrieveRelevantChunks } from "../pdf";
-import { Message, DocumentRecord, Disease } from "../types";
+import { retrieveRelevantChunks } from "../search";
+import { Message, Disease } from "../types";
 
 export default function AIChatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "assistant",
-      content: "Hello! I am KrishiVigyan, your AI Agricultural Advisor. I am grounded in our crop pathology encyclopedia and any research papers you upload under Document Intelligence. How can I help you today?",
+      content: "Hello! I am KrishiVigyan, your AI Agricultural Advisor. I am grounded in our crop pathology encyclopedia. How can I help you today?",
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
@@ -37,7 +37,7 @@ export default function AIChatbot() {
       {
         id: "welcome",
         role: "assistant",
-        content: "Hello! I am KrishiVigyan, your AI Agricultural Advisor. I am grounded in our crop pathology encyclopedia and any research papers you upload under Document Intelligence. How can I help you today?",
+        content: "Hello! I am KrishiVigyan, your AI Agricultural Advisor. I am grounded in our crop pathology encyclopedia. How can I help you today?",
         timestamp: new Date().toLocaleTimeString()
       }
     ]);
@@ -66,21 +66,12 @@ export default function AIChatbot() {
 
     try {
       // --- RAG PIPELINE ---
-      // 1. Gather all documents from IndexedDB
-      const documents = await getAllRecords<DocumentRecord>("documents");
+      // 1. Gather all diseases from IndexedDB
       const diseases = await getAllRecords<Disease>("diseases");
 
       // 2. Build full chunk corpus
       const textChunks: string[] = [];
       const chunkSourceMapping: { [chunk: string]: string } = {};
-
-      // Map document chunks
-      documents.forEach(doc => {
-        doc.chunks.forEach(chunk => {
-          textChunks.push(chunk);
-          chunkSourceMapping[chunk] = `PDF: ${doc.title}`;
-        });
-      });
 
       // Map seeded disease profiles as chunks to ground chatbot general knowledge!
       diseases.forEach(d => {
@@ -173,7 +164,7 @@ export default function AIChatbot() {
             Agronomist RAG Chatbot
           </h1>
           <p className="text-[#5D6B5F] font-sans text-xs">
-            Ask complex agronomy questions. Your queries are grounded in our local encyclopedia and custom PDF publications.
+            Ask complex agronomy questions. Your queries are grounded in our local crop pathology encyclopedia.
           </p>
         </div>
         <button 

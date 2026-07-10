@@ -1,5 +1,5 @@
 // Database management for KrishiVigyan using IndexedDB
-import { Crop, Disease, Prediction, DocumentRecord, QuizRecord } from "./types";
+import { Crop, Disease, Prediction, QuizRecord } from "./types";
 
 const DB_NAME = "KrishiVigyanDB";
 const DB_VERSION = 1;
@@ -28,11 +28,6 @@ export function openDatabase(): Promise<IDBDatabase> {
       // Create Prediction store
       if (!db.objectStoreNames.contains("predictions")) {
         db.createObjectStore("predictions", { keyPath: "id" });
-      }
-
-      // Create Document store
-      if (!db.objectStoreNames.contains("documents")) {
-        db.createObjectStore("documents", { keyPath: "id" });
       }
 
       // Create Quiz store
@@ -293,7 +288,6 @@ export interface DatabaseExportData {
   crops: Crop[];
   diseases: Disease[];
   predictions: Prediction[];
-  documents: DocumentRecord[];
   quizzes: QuizRecord[];
 }
 
@@ -301,14 +295,12 @@ export async function exportDatabaseToJSONString(): Promise<string> {
   const crops = await getAllRecords<Crop>("crops");
   const diseases = await getAllRecords<Disease>("diseases");
   const predictions = await getAllRecords<Prediction>("predictions");
-  const documents = await getAllRecords<DocumentRecord>("documents");
   const quizzes = await getAllRecords<QuizRecord>("quizzes");
 
   const exportData: DatabaseExportData = {
     crops,
     diseases,
     predictions,
-    documents,
     quizzes
   };
 
@@ -320,7 +312,7 @@ export async function importDatabaseFromJSON(jsonString: string): Promise<void> 
     const importData = JSON.parse(jsonString) as DatabaseExportData;
     const db = await openDatabase();
 
-    const stores: Array<keyof DatabaseExportData> = ["crops", "diseases", "predictions", "documents", "quizzes"];
+    const stores: Array<keyof DatabaseExportData> = ["crops", "diseases", "predictions", "quizzes"];
     const tx = db.transaction(stores, "readwrite");
 
     for (const storeName of stores) {

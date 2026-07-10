@@ -23,7 +23,6 @@ import HealthyComparison from "./components/HealthyComparison";
 import DiseasePrevention from "./components/DiseasePrevention";
 import Analytics from "./components/Analytics";
 import AIChatbot from "./components/AIChatbot";
-import DocumentIntelligence from "./components/DocumentIntelligence";
 import QuizGenerator from "./components/QuizGenerator";
 import TrendSimulation from "./components/TrendSimulation";
 import About from "./components/About";
@@ -36,7 +35,6 @@ type TabId =
   | "prevention" 
   | "analytics" 
   | "chatbot" 
-  | "documents" 
   | "quiz" 
   | "simulation" 
   | "about";
@@ -55,7 +53,6 @@ export default function App() {
     { id: "prevention", label: "Prevention Therapy", icon: ShieldCheck, desc: "IPM controls & field sanitation" },
     { id: "analytics", label: "Agri Analytics", icon: BarChart3, desc: "Diagnosis counts and timelines" },
     { id: "chatbot", label: "Agronomist Chatbot", icon: MessageSquare, desc: "Grounded conversational expert" },
-    { id: "documents", label: "Doc Intelligence", icon: FileText, desc: "PDF research text parsing" },
     { id: "quiz", label: "Extension Quiz", icon: GraduationCap, desc: "Bespeake classroom classrooms" },
     { id: "simulation", label: "Risk Simulator", icon: ThermometerSun, desc: "Test weather disease outbreaks" },
     { id: "about", label: "About Platform", icon: Info, desc: "Tech specs and spec models" }
@@ -82,8 +79,6 @@ export default function App() {
         return <Analytics />;
       case "chatbot":
         return <AIChatbot />;
-      case "documents":
-        return <DocumentIntelligence />;
       case "quiz":
         return <QuizGenerator />;
       case "simulation":
@@ -100,14 +95,12 @@ export default function App() {
       {/* Sidebar for Desktop */}
       <aside className="hidden lg:flex flex-col w-72 shrink-0 bg-[#2E7D32] text-white min-h-screen sticky top-0 p-6 space-y-8 shadow-md">
         {/* Brand Header */}
-        <div className="flex items-center gap-3 pb-4 border-b border-[#388E3C]">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#2E7D32] shadow-sm">
+        <div className="flex flex-col items-center text-center pb-4 border-b border-[#388E3C] w-full">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#2E7D32] shadow-sm mb-2">
             <Sprout size={24} />
           </div>
-          <div>
-            <span className="font-display text-xl font-bold tracking-tight text-white leading-none">KrishiVigyan</span>
-            <p className="text-[10px] text-[#A5D6A7] font-mono tracking-wider font-bold mt-0.5">AGRI INTELLIGENCE</p>
-          </div>
+          <span className="font-display text-xl font-bold tracking-tight text-white leading-none">KrishiVigyan</span>
+          <p className="text-[10px] text-[#A5D6A7] font-mono tracking-wider font-bold mt-1">AGRI INTELLIGENCE</p>
         </div>
 
         {/* Sidebar Nav */}
@@ -148,8 +141,9 @@ export default function App() {
       </aside>
 
       {/* Mobile Top Header */}
-      <header className="lg:hidden bg-[#2E7D32] text-white px-5 py-4 flex justify-between items-center sticky top-0 z-40 shadow-sm">
-        <div className="flex items-center gap-2">
+      <header className="lg:hidden bg-[#2E7D32] text-white px-5 py-4 flex justify-between items-center sticky top-0 z-40 shadow-sm relative">
+        <div className="w-8 h-8" /> {/* Left spacer for visual balance */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-[#2E7D32] shadow-sm">
             <Sprout size={20} />
           </div>
@@ -157,7 +151,7 @@ export default function App() {
         </div>
         <button 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-1.5 rounded-lg border border-[#388E3C] bg-[#1B5E20] text-white"
+          className="p-1.5 rounded-lg border border-[#388E3C] bg-[#1B5E20] text-white z-10"
         >
           {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -213,35 +207,14 @@ export default function App() {
         {/* Header */}
         <header className="h-16 px-6 md:px-8 flex items-center justify-between border-b border-[#E8E5DF] bg-white sticky top-0 z-20">
           <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-[#5D6B5F] font-semibold">
-            <span className="font-medium">Station: Vidarbha Center</span>
+            <span className="font-medium">Station: Bangalore station</span>
             <span className="w-1.5 h-1.5 bg-[#C2C9C3] rounded-full"></span>
             <span>Temp: 32°C</span>
             <span className="w-1.5 h-1.5 bg-[#C2C9C3] rounded-full"></span>
             <span>Humidity: 65%</span>
           </div>
           <div className="flex items-center gap-4">
-            {/* API Key configuration button */}
-            <button 
-              onClick={() => {
-                setApiKeyInput(localStorage.getItem("gemini_api_key") || "");
-                setShowKeyModal(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E8E5DF] hover:border-[#2E7D32] hover:bg-[#F1F8E9] text-xs font-semibold text-[#5D6B5F] hover:text-[#2E7D32] transition"
-              title="Configure Gemini API Key"
-              id="header_key_config_btn"
-            >
-              <Key size={14} className={localStorage.getItem("gemini_api_key") ? "text-[#2E7D32] fill-[#2E7D32]/20" : "text-[#EF6C00]"} />
-              <span className="hidden sm:inline">
-                {localStorage.getItem("gemini_api_key") ? "API Key Configured" : "Add API Key"}
-              </span>
-            </button>
-            <button className="p-2 text-[#5D6B5F] hover:bg-[#F5F3EF] rounded-full transition-colors relative">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#EF6C00] rounded-full"></span>
-            </button>
-            <div className="w-8 h-8 rounded-full bg-[#795548] border-2 border-white shadow-xs flex items-center justify-center text-white text-xs font-bold">AM</div>
+            {/* Header controls cleared per user request */}
           </div>
         </header>
 

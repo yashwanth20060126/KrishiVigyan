@@ -14,7 +14,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { getAllRecords, seedDatabaseIfEmpty } from "../db";
-import { Crop, Disease, Prediction, DocumentRecord } from "../types";
+import { Crop, Disease, Prediction } from "../types";
 
 interface HomeProps {
   setActiveTab: (tab: string) => void;
@@ -24,8 +24,7 @@ export default function Home({ setActiveTab }: HomeProps) {
   const [stats, setStats] = useState({
     crops: 0,
     diseases: 0,
-    predictions: 0,
-    documents: 0
+    predictions: 0
   });
 
   useEffect(() => {
@@ -35,13 +34,11 @@ export default function Home({ setActiveTab }: HomeProps) {
         const crops = await getAllRecords<Crop>("crops");
         const diseases = await getAllRecords<Disease>("diseases");
         const predictions = await getAllRecords<Prediction>("predictions");
-        const documents = await getAllRecords<DocumentRecord>("documents");
 
         setStats({
           crops: crops.length,
           diseases: diseases.length,
-          predictions: predictions.length,
-          documents: documents.length
+          predictions: predictions.length
         });
       } catch (err) {
         console.error("Failed to load home statistics", err);
@@ -98,14 +95,6 @@ export default function Home({ setActiveTab }: HomeProps) {
       icon: MessageSquare,
       color: "bg-[#1B5E20] text-white",
       hoverColor: "hover:border-[#1B5E20]/50 hover:bg-[#FDFBF7]"
-    },
-    {
-      id: "documents",
-      title: "Doc Intelligence",
-      desc: "Upload PDFs (agri pamphlets or scientific bulletins) for client-side parsing & semantic Q&A.",
-      icon: FileText,
-      color: "bg-[#795548] text-white",
-      hoverColor: "hover:border-[#795548]/50 hover:bg-[#FDFBF7]"
     },
     {
       id: "quiz",
@@ -172,12 +161,11 @@ export default function Home({ setActiveTab }: HomeProps) {
       </div>
 
       {/* Metrics Section */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { label: "Crops Cataloged", value: stats.crops, icon: Sprout, color: "text-[#2E7D32] bg-[#F1F8E9]" },
           { label: "Outbreaks Tracked", value: stats.diseases, icon: ShieldCheck, color: "text-[#EF6C00] bg-[#FFF3E0]" },
-          { label: "AI Diagnoses Made", value: stats.predictions, icon: ScanLine, color: "text-[#2E7D32] bg-[#E8F5E9]" },
-          { label: "Reference Docs Loaded", value: stats.documents, icon: FileText, color: "text-[#0277BD] bg-[#E1F5FE]" }
+          { label: "AI Diagnoses Made", value: stats.predictions, icon: ScanLine, color: "text-[#2E7D32] bg-[#E8F5E9]" }
         ].map((m, idx) => (
           <div key={idx} className="flex items-center gap-4 rounded-2xl border border-[#E8E5DF] bg-white p-5 shadow-xs">
             <div className={`rounded-xl p-3 ${m.color}`}>

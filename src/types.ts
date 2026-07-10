@@ -29,15 +29,6 @@ export interface Prediction {
   date: string;
 }
 
-export interface DocumentRecord {
-  id: string;
-  title: string;
-  fileName: string;
-  extractedText: string;
-  chunks: string[];
-  uploadDate: string;
-}
-
 export interface QuizRecord {
   id: string;
   topic: string;
