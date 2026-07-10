@@ -133,7 +133,10 @@ export default function TrendSimulation() {
     try {
       const response = await fetch("/api/simulate-explain", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Gemini-Api-Key": localStorage.getItem("gemini_api_key") || ""
+        },
         body: JSON.stringify({
           crop: activeCrop.name,
           disease: activeDisease.name,

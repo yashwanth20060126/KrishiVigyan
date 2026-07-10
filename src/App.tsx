@@ -13,7 +13,8 @@ import {
   Info,
   Menu,
   X,
-  Home as HomeIcon
+  Home as HomeIcon,
+  Key
 } from "lucide-react";
 import Home from "./components/Home";
 import DiseaseDetection from "./components/DiseaseDetection";
@@ -43,6 +44,8 @@ type TabId =
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState(() => localStorage.getItem("gemini_api_key") || "");
 
   const navigationItems = [
     { id: "home", label: "Dashboard", icon: HomeIcon, desc: "Main landing & db overview" },
@@ -217,6 +220,21 @@ export default function App() {
             <span>Humidity: 65%</span>
           </div>
           <div className="flex items-center gap-4">
+            {/* API Key configuration button */}
+            <button 
+              onClick={() => {
+                setApiKeyInput(localStorage.getItem("gemini_api_key") || "");
+                setShowKeyModal(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E8E5DF] hover:border-[#2E7D32] hover:bg-[#F1F8E9] text-xs font-semibold text-[#5D6B5F] hover:text-[#2E7D32] transition"
+              title="Configure Gemini API Key"
+              id="header_key_config_btn"
+            >
+              <Key size={14} className={localStorage.getItem("gemini_api_key") ? "text-[#2E7D32] fill-[#2E7D32]/20" : "text-[#EF6C00]"} />
+              <span className="hidden sm:inline">
+                {localStorage.getItem("gemini_api_key") ? "API Key Configured" : "Add API Key"}
+              </span>
+            </button>
             <button className="p-2 text-[#5D6B5F] hover:bg-[#F5F3EF] rounded-full transition-colors relative">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -231,6 +249,106 @@ export default function App() {
           {renderActiveView()}
         </main>
       </div>
+
+      {/* API Key Settings Modal */}
+      {showKeyModal && (
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl border border-[#E8E5DF] shadow-2xl p-6 relative animate-fade-in space-y-4">
+            <button 
+              onClick={() => setShowKeyModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-[#5D6B5F] hover:bg-[#F5F3EF] hover:text-[#1B3022]"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F1F8E9] text-[#2E7D32]">
+                <Key size={20} />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-lg text-[#1B3022]">Gemini API Configuration</h3>
+                <p className="text-xs text-[#5D6B5F]">Securely store your API key locally in the browser</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <p className="text-xs text-[#5D6B5F] leading-relaxed">
+                If your host deployment (like Vercel) does not have the <code className="bg-[#F5F3EF] px-1 py-0.5 rounded font-mono font-bold text-red-600">GEMINI_API_KEY</code> environment variable configured, you can enter your personal Gemini API key here.
+              </p>
+              <p className="text-xs text-[#5D6B5F] leading-relaxed">
+                Your key will only be stored in your browser's local storage and is sent as a secure request header to authorize your backend API calls.
+              </p>
+              
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#5D6B5F] uppercase tracking-wider block">Gemini API Key</label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    value={apiKeyInput}
+                    onChange={(e) => setApiKeyInput(e.target.value)}
+                    placeholder="AIzaSy..."
+                    className="w-full pl-3 pr-10 py-2 rounded-xl border border-[#E8E5DF] focus:outline-none focus:border-[#2E7D32] text-sm bg-white text-[#1B3022] font-mono"
+                  />
+                  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                    <Key size={14} className="text-[#A5A5A5]" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-2 text-[11px]">
+                <a 
+                  href="https://aistudio.google.com/app/apikey" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-[#2E7D32] hover:underline font-semibold flex items-center gap-1"
+                >
+                  Get a free Gemini API Key
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+                
+                {localStorage.getItem("gemini_api_key") && (
+                  <button 
+                    onClick={() => {
+                      localStorage.removeItem("gemini_api_key");
+                      setApiKeyInput("");
+                      setShowKeyModal(false);
+                      window.location.reload();
+                    }}
+                    className="text-red-600 hover:underline font-semibold"
+                  >
+                    Clear Saved Key
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-3 border-t border-[#E8E5DF]">
+              <button 
+                onClick={() => setShowKeyModal(false)}
+                className="flex-1 py-2 rounded-xl border border-[#E8E5DF] hover:bg-[#F5F3EF] text-sm font-semibold text-[#5D6B5F]"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  if (apiKeyInput.trim()) {
+                    localStorage.setItem("gemini_api_key", apiKeyInput.trim());
+                  } else {
+                    localStorage.removeItem("gemini_api_key");
+                  }
+                  setShowKeyModal(false);
+                  window.location.reload();
+                }}
+                className="flex-1 py-2 rounded-xl bg-[#2E7D32] hover:bg-[#1B5E20] text-sm font-bold text-white shadow-xs"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

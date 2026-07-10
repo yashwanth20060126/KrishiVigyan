@@ -51,7 +51,10 @@ export default function QuizGenerator() {
     try {
       const response = await fetch("/api/generate-quiz", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Gemini-Api-Key": localStorage.getItem("gemini_api_key") || ""
+        },
         body: JSON.stringify({ topic })
       });
 

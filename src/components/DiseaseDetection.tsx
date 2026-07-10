@@ -161,7 +161,10 @@ export default function DiseaseDetection() {
       
       const response = await fetch("/api/disease-detect", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Gemini-Api-Key": localStorage.getItem("gemini_api_key") || ""
+        },
         body: JSON.stringify({
           imageBase64: base64Clean,
           mimeType: mimeType || "image/jpeg"

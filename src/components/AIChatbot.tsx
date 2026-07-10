@@ -105,7 +105,10 @@ export default function AIChatbot() {
 
       const response = await fetch("/api/chat-rag", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Gemini-Api-Key": localStorage.getItem("gemini_api_key") || ""
+        },
         body: JSON.stringify({
           messages: history,
           context: groundedContext

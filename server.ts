@@ -13,10 +13,18 @@ app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 
 // Initialize Google GenAI
-const getAIClient = () => {
-  const apiKey = process.env.GEMINI_API_KEY;
+const getAIClient = (req?: express.Request) => {
+  let apiKey = process.env.GEMINI_API_KEY;
+  
+  if (req) {
+    const headerKey = req.headers["x-gemini-api-key"] || req.headers["X-Gemini-Api-Key"];
+    if (headerKey && typeof headerKey === "string" && headerKey.trim()) {
+      apiKey = headerKey.trim();
+    }
+  }
+
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY environment variable is missing");
+    throw new Error("GEMINI_API_KEY environment variable is missing. Please configure it in your environment settings, or provide it via the API Key settings in the UI.");
   }
   return new GoogleGenAI({ apiKey });
 };
@@ -99,7 +107,7 @@ app.post("/api/disease-detect", async (req, res) => {
       return res.status(400).json({ error: "Missing imageBase64 or mimeType" });
     }
 
-    const ai = getAIClient();
+    const ai = getAIClient(req);
     
     const prompt = `Analyze this crop leaf image. Identify the crop species, detect if there is any disease, and return a detailed report in structured JSON format.
 If no disease is detected, identify the healthy crop and state that the crop leaf is healthy.
@@ -176,7 +184,7 @@ app.post("/api/chat-rag", async (req, res) => {
       return res.status(400).json({ error: "Missing or invalid messages array" });
     }
 
-    const ai = getAIClient();
+    const ai = getAIClient(req);
     
     let systemInstruction = `You are KrishiVigyan, an expert AI Agricultural Consultant, Scientist, and Agronomist.
 Your goal is to provide accurate, educational, and highly practical advice on crop health, disease prevention, and agronomy.
@@ -219,7 +227,7 @@ app.post("/api/generate-quiz", async (req, res) => {
       return res.status(400).json({ error: "Missing topic" });
     }
 
-    const ai = getAIClient();
+    const ai = getAIClient(req);
 
     const prompt = `Generate an agricultural quiz with exactly 5 diverse questions on the topic: "${topic}".
 Include a mix of Multiple Choice (mcq), True/False (true-false), and Fill in the blank (fill-in).
@@ -286,7 +294,7 @@ app.post("/api/simulate-explain", async (req, res) => {
       return res.status(400).json({ error: "Missing crop or disease info" });
     }
 
-    const ai = getAIClient();
+    const ai = getAIClient(req);
 
     const prompt = `As an agronomist, explain the calculated risk of disease spread.
 Crop: ${crop}
