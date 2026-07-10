@@ -26,7 +26,14 @@ const getAIClient = (req?: express.Request) => {
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY environment variable is missing. Please configure it in your environment settings, or provide it via the API Key settings in the UI.");
   }
-  return new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({ 
+    apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      }
+    }
+  });
 };
 
 // Helper to perform Gemini API calls with exponential backoff retries and model fallback
@@ -40,10 +47,10 @@ async function generateContentWithRetry(
 ) {
   // Ordered sequence of fallback models to ensure extremely high availability and error resilience
   const modelsToTry = [
-    params.model || "gemini-3.1-flash-lite",
-    "gemini-3.1-flash-lite",
+    params.model || "gemini-3.5-flash",
     "gemini-3.5-flash",
-    "gemini-flash-latest"
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-pro-preview"
   ];
 
   // Remove duplicates while preserving priority order
@@ -133,8 +140,10 @@ Your response MUST be valid JSON matching this schema:
     };
 
     const response = await generateContentWithRetry(ai, {
-      model: "gemini-3.1-flash-lite",
-      contents: [imagePart, { text: prompt }],
+      model: "gemini-3.5-flash",
+      contents: {
+        parts: [imagePart, { text: prompt }]
+      },
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -205,7 +214,7 @@ ${context}
     }));
 
     const response = await generateContentWithRetry(ai, {
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-3.5-flash",
       contents: formattedContents,
       config: {
         systemInstruction,
@@ -246,7 +255,7 @@ Your response MUST be valid JSON matching this schema:
 }`;
 
     const response = await generateContentWithRetry(ai, {
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-3.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -311,7 +320,7 @@ Please generate a concise, educational explanation (2-3 paragraphs) explaining:
 3. Immediate proactive measures or integrated pest management (IPM) steps farmers should take if these conditions persist.`;
 
     const response = await generateContentWithRetry(ai, {
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-3.5-flash",
       contents: prompt,
     });
 
