@@ -1,0 +1,8 @@
+{
+  "name": "KrishiVigyan",
+  "description": "An AI-powered crop disease detection and agricultural intelligence platform for crop diagnosis, disease prevention, trend simulation, and agricultural learning.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
