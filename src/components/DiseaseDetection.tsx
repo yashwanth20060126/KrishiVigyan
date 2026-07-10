@@ -169,11 +169,23 @@ export default function DiseaseDetection() {
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Analysis failed");
+        let errMsg = "Analysis failed";
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch (_) {
+          const text = await response.text().catch(() => "");
+          errMsg = text.substring(0, 150) || `Server error (${response.status})`;
+        }
+        throw new Error(errMsg);
       }
 
-      const report = await response.json();
+      let report;
+      try {
+        report = await response.json();
+      } catch (jsonErr) {
+        throw new Error("Invalid response format received from server.");
+      }
       setResult(report);
 
       // Create smaller thumbnail for history store

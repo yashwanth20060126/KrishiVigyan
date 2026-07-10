@@ -113,10 +113,23 @@ export default function AIChatbot() {
       });
 
       if (!response.ok) {
-        throw new Error("Chat service responded with an error");
+        let errMsg = "Chat service responded with an error";
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch (_) {
+          const text = await response.text().catch(() => "");
+          errMsg = text.substring(0, 150) || `Server error (${response.status})`;
+        }
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        throw new Error("Invalid response format received from chat service.");
+      }
 
       const assistantMessage: Message = {
         id: "msg_" + Date.now(),

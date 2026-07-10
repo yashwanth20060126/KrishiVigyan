@@ -56,14 +56,27 @@ export default function QuizGenerator() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate quiz from server");
+        let errMsg = "Failed to generate quiz from server";
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch (_) {
+          const text = await response.text().catch(() => "");
+          errMsg = text.substring(0, 150) || `Server error (${response.status})`;
+        }
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        throw new Error("Invalid response format received from quiz service.");
+      }
       setQuestions(data.questions || []);
     } catch (err: any) {
       console.error(err);
-      alert("Error generating quiz. Please verify that your Gemini API key is active.");
+      alert("Error generating quiz: " + err.message);
     } finally {
       setLoading(false);
     }

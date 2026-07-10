@@ -132,10 +132,23 @@ ${textToSummarize}
       });
 
       if (!response.ok) {
-        throw new Error("Summary service failed");
+        let errMsg = "Summary service failed";
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch (_) {
+          const text = await response.text().catch(() => "");
+          errMsg = text.substring(0, 150) || `Server error (${response.status})`;
+        }
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        throw new Error("Invalid response format received from summary service.");
+      }
       setActiveSummary({
         title: doc.title,
         text: data.text

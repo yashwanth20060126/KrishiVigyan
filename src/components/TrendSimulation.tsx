@@ -146,14 +146,27 @@ export default function TrendSimulation() {
       });
 
       if (!response.ok) {
-        throw new Error("Simulation explanation failed");
+        let errMsg = "Simulation explanation failed";
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch (_) {
+          const text = await response.text().catch(() => "");
+          errMsg = text.substring(0, 150) || `Server error (${response.status})`;
+        }
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        throw new Error("Invalid response format received from simulation service.");
+      }
       setExplanation(data.explanation);
     } catch (err: any) {
       console.error(err);
-      setExplanation("Unable to generate AI explanation. Please check your network and Gemini API status.");
+      setExplanation(`Unable to generate AI explanation: ${err.message}`);
     } finally {
       setExplainLoading(false);
     }
