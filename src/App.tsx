@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   Home as HomeIcon,
-  Key
+  Key,
+  Cpu
 } from "lucide-react";
 import Home from "./components/Home";
 import DiseaseDetection from "./components/DiseaseDetection";
@@ -26,6 +27,7 @@ import AIChatbot from "./components/AIChatbot";
 import QuizGenerator from "./components/QuizGenerator";
 import TrendSimulation from "./components/TrendSimulation";
 import About from "./components/About";
+import PyTorchSandbox from "./components/PyTorchSandbox";
 
 type TabId = 
   | "home" 
@@ -36,6 +38,7 @@ type TabId =
   | "analytics" 
   | "chatbot" 
   | "quiz" 
+  | "pytorch"
   | "simulation" 
   | "about";
 
@@ -54,6 +57,7 @@ export default function App() {
     { id: "analytics", label: "Agri Analytics", icon: BarChart3, desc: "Diagnosis counts and timelines" },
     { id: "chatbot", label: "Agronomist Chatbot", icon: MessageSquare, desc: "Grounded conversational expert" },
     { id: "quiz", label: "Extension Quiz", icon: GraduationCap, desc: "Bespeake classroom classrooms" },
+    { id: "pytorch", label: "PyTorch Basics Lab", icon: Cpu, desc: "Interactive tensor graph & models" },
     { id: "simulation", label: "Risk Simulator", icon: ThermometerSun, desc: "Test weather disease outbreaks" },
     { id: "about", label: "About Platform", icon: Info, desc: "Tech specs and spec models" }
   ];
@@ -81,6 +85,8 @@ export default function App() {
         return <AIChatbot />;
       case "quiz":
         return <QuizGenerator />;
+      case "pytorch":
+        return <PyTorchSandbox />;
       case "simulation":
         return <TrendSimulation />;
       case "about":
